@@ -115,11 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // 5. Image Zoom / Lightbox Functionality
     // ==========================================
-    // (KEEP YOUR EXISTING LIGHTBOX CODE FROM HERE DOWNWARD)
-
-    // ==========================================
-    // 5. Image Zoom / Lightbox Functionality
-    // ==========================================
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const closeBtn = document.querySelector('.lightbox-close');
@@ -239,22 +234,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const deck = document.getElementById('deck');
     let touchstartX = 0;
+    let touchstartY = 0;
     let touchendX = 0;
+    let touchendY = 0;
     const swipeThreshold = 50; 
+    const maxVerticalDeviation = 30; // Prevents triggering when scrolling vertically
 
-    // Touch Swiping
+    // Touch Swiping (UPDATED FOR STRICT HORIZONTAL)
     deck.addEventListener('touchstart', (e) => {
         touchstartX = e.changedTouches[0].screenX;
+        touchstartY = e.changedTouches[0].screenY;
     }, { passive: true });
 
     deck.addEventListener('touchend', (e) => {
         touchendX = e.changedTouches[0].screenX;
-        const distance = touchendX - touchstartX;
-        if (distance < -swipeThreshold) changeSlide(currentIdx + 1); 
-        else if (distance > swipeThreshold) changeSlide(currentIdx - 1); 
+        touchendY = e.changedTouches[0].screenY;
+        
+        const deltaX = touchendX - touchstartX;
+        const deltaY = touchendY - touchstartY;
+
+        const isHorizontalLongEnough = Math.abs(deltaX) >= swipeThreshold;
+        const isStrictlyHorizontal = Math.abs(deltaY) <= maxVerticalDeviation;
+
+        if (isHorizontalLongEnough && isStrictlyHorizontal) {
+            if (deltaX < 0) {
+                changeSlide(currentIdx + 1); // Swiped Left -> Next
+            } else {
+                changeSlide(currentIdx - 1); // Swiped Right -> Prev
+            }
+        }
     });
 
-    // 20% Edge Clicking for Navigation
+    // 10% Edge Clicking for Navigation (UPDATED COMMENTS & LOGIC)
     deck.addEventListener('click', (e) => {
         // Prevent slide navigation when clicking on images or buttons
         if (e.target.tagName.toLowerCase() === 'img' || e.target.closest('button') || e.target.closest('.rail-item')) {
@@ -264,10 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickX = e.clientX;
         const screenWidth = window.innerWidth;
 
+        // Triggers only if clicked in the far left 10% or far right 10% of the screen
         if (clickX < screenWidth * 0.10) {
-            changeSlide(currentIdx - 1); // Clicked in the left 20%
+            changeSlide(currentIdx - 1); // Clicked in the left 10%
         } else if (clickX > screenWidth * 0.90) {
-            changeSlide(currentIdx + 1); // Clicked in the right 20%
+            changeSlide(currentIdx + 1); // Clicked in the right 10%
         }
     });
 
