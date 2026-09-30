@@ -1,0 +1,653 @@
+@import url('fonts/fonts.css');
+
+:root {
+  --bg: #F7F6F2;
+  --ink: #1C1C1A;
+  --ink-soft: #6B6A63;
+  --line: #DAD8CE;
+  --line-soft: #E7E5DC;
+  --accent: #33506B;
+  --accent-soft: #E7EDEF;
+  --box-bg: #FFFFFF;
+
+  --sig-red: #A8402F;
+  --sig-amber: #B8842C;
+  --sig-green: #3C7A52;
+
+  --serif: 'Playfair Display', Georgia, serif;
+  --sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* Widened to match your old project's sidebar */
+  --rail-w: 300px;
+}
+
+body.rail-toggled { --rail-w: 0px; }
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--line-soft) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.55;
+}
+
+/* --- Mouse Halo / Highlighter (Firozi / Turquoise) --- */
+#cursor-halo {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  pointer-events: none; 
+  z-index: 9999;
+  background: radial-gradient(circle 80px at var(--mouse-x, -100px) var(--mouse-y, -100px), rgba(0, 190, 210, 0.18), transparent 100%);
+}
+
+
+
+
+/* --- Uniform Switch Image Container (Adjustable Size without Zooming) --- */
+.switch-img {
+  width: 180px;  /* Increase this number to stretch the container larger */
+  height: 180px; /* Keep this identical to the width for a perfect square */
+  flex-shrink: 0;
+  border: 1px solid var(--line-soft);
+  border-radius: 6px;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 4px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.switch-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* CRITICAL FIX: Stops the image from zooming or cropping */
+  border-radius: 4px;
+}
+
+
+
+
+
+
+/* --- Dynamic NGN Instruction Badges --- */
+.kicker.ngn-badge {
+  font-size: 32px !important; /* Forces the larger size */
+  padding: 10px 18px;
+  border-radius: 6px;
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 25px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+
+
+
+
+
+.menu-toggle {
+  position: fixed;
+  top: 18px;
+  left: 20px;
+  z-index: 100;
+  background: var(--box-bg);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 8px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: border-color 0.2s ease;
+}
+
+.menu-toggle:hover { border-color: var(--accent); }
+.menu-toggle span {
+  display: block; width: 20px; height: 2px;
+  background: var(--ink); transition: 0.3s ease;
+}
+
+.deck {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  z-index: 1;
+  padding-left: var(--rail-w);
+  transition: padding-left 0.3s ease;
+}
+
+
+
+
+
+.slide {
+  position: absolute;
+  inset: 0;
+  left: var(--rail-w);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition: opacity 0.5s ease, transform 0.5s ease, left 0.3s ease;
+  padding: 6vh 6vw;
+}
+.slide.active { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* Expanded frame width to utilize screen space better */
+.frame { width: 100%; max-width: 860px; }
+
+/* Expanded box padding */
+.box { border: 1px solid var(--line); background: var(--box-bg); padding: 40px 48px; }
+
+.kicker { font-size: 13px; letter-spacing: 0.02em; color: var(--accent); margin: 0 0 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+/* Remove the dot before the NGN badges */
+.kicker.ngn-badge::before {
+  content: none !important;
+  display: none !important;
+}
+
+h1, h2, h3 { font-family: var(--serif); font-weight: 400; margin: 0; color: var(--ink); }
+
+/* Adjusted margins for better spacing */
+h1.huge { font-size: clamp(46px, 7vw, 78px); line-height: 1.02; letter-spacing: -0.01em; margin-bottom: 30px; }
+h2 { font-size: clamp(28px, 3.6vw, 40px); line-height: 1.15; margin-bottom: 35px; max-width: 100%; }
+h2.huge-sm { font-size: clamp(30px, 4vw, 44px); line-height: 1.18; max-width: 560px; }
+h3 { font-size: 18px; margin-bottom: 8px; }
+
+/* Increased line height and removed max-width for better paragraph rendering */
+.sub, .lead { font-size: 17px; line-height: 1.8; color: var(--ink-soft); max-width: 100%; margin: 0 0 40px; }
+.meta { font-size: 13px; color: var(--ink-soft); margin-top: 0; }
+
+.track { width: 100%; max-width: 460px; height: 46px; margin: 6px 0 30px; overflow: visible; }
+.track .rail-line, .track .sleeper { stroke: var(--line); stroke-width: 2; }
+.track .runner { fill: var(--accent); }
+
+/* Updated plain-list styles for larger vertical spacing */
+.plain-list { list-style: none; margin: 0; padding: 0; max-width: 100%; }
+.plain-list li { display: flex; gap: 18px; align-items: baseline; padding: 24px 0; border-bottom: 1px solid var(--line); font-size: 15.5px; line-height: 1.7; color: var(--ink); }
+.plain-list li:last-child { border-bottom: none; }
+.plain-list .n { font-family: var(--mono); color: var(--accent); font-size: 13px; flex-shrink: 0; width: 22px; }
+
+/* --- Modern Process Table Design (Full Horizontal Width) --- */
+.modern-process-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px; 
+  margin-top: 5px;
+}
+
+.modern-process-table tr {
+  background: var(--box-bg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modern-process-table tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.modern-process-table td {
+  padding: 12px 18px; 
+  vertical-align: middle;
+  color: var(--ink);
+  font-size: 16.5px;
+  line-height: 1.5;
+}
+
+/* The left column containing the "Step-X" badge */
+.modern-process-table td:first-child {
+  border-radius: 6px 0 0 6px;
+  width: 130px; 
+  text-align: center;
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+.modern-process-table td:last-child {
+  border-radius: 0 6px 6px 0;
+  border-top: 1px solid var(--line-soft);
+  border-right: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+}
+
+/* Rectangular badge for 'Step-X' */
+.step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 14px; 
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-weight: bold;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* --- Expanded Scrollable Frame --- */
+.scrollable-frame {
+  max-height: 95vh; 
+  overflow-y: auto; 
+  padding-right: 15px; 
+}
+
+/* Custom Webkit Scrollbar */
+.scrollable-frame::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollable-frame::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollable-frame::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
+.scrollable-frame::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+.timeline { position: relative; max-width: 560px; padding-left: 4px; }
+.timeline::before { content: ""; position: absolute; left: 15px; top: 8px; bottom: 8px; width: 1px; background: var(--line); }
+.tstep { position: relative; display: flex; gap: 22px; padding: 0 0 30px; }
+.tstep:last-child { padding-bottom: 0; }
+.tstep .dot { position: relative; z-index: 1; flex-shrink: 0; width: 31px; height: 31px; border-radius: 50%; background: var(--bg); border: 1px solid var(--accent); color: var(--accent); font-family: var(--mono); font-size: 12px; display: flex; align-items: center; justify-content: center; }
+.tstep h3 { margin-bottom: 6px; }
+.tstep p { margin: 0; font-size: 14.5px; color: var(--ink-soft); line-height: 1.55; max-width: 420px; }
+
+/* Grid adjustments for layout */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; max-width: 100%; }
+.item { border: 1px solid var(--line); background: var(--box-bg); padding: 20px 22px; }
+.item p { font-size: 14px; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+.signal-icon { display: flex; gap: 5px; margin-bottom: 12px; }
+.signal-icon span { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.signal-icon .r { background: var(--sig-red); }
+.signal-icon .a { background: var(--sig-amber); }
+.signal-icon .g { background: var(--sig-green); }
+
+.pullquote { border-left: 2px solid var(--accent); padding-left: 22px; margin: 0 0 26px; }
+.pullquote h2 { margin-bottom: 0; }
+
+
+/* ==========================================================================
+   Side Rail Nav
+   ========================================================================== */
+
+.rail {
+  position: fixed; 
+  top: 0; left: 0; bottom: 0;
+  width: 300px; 
+  transform: translateX(0); 
+  transition: transform 0.3s ease;
+  background: #101a23; 
+  z-index: 5;
+  display: flex; 
+  flex-direction: column;
+  border-right: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+body.rail-toggled .rail { transform: translateX(-100%); }
+
+.rail-header {
+  padding: 18px 22px 18px; /* Removed 70px top padding to bring the block up */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  flex-shrink: 0;
+}
+
+.rail-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  margin-left: 55px; /* Adds clearance for the fixed menu toggle */
+}
+
+.rail-mark-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex-shrink: 0;
+  display: block;
+}
+
+.rail-mark-text {
+  font-family: var(--mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: rgba(207, 224, 221, 0.55);
+  line-height: 1.4;
+}
+
+.rail-title {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 1.02rem;
+  line-height: 1.32;
+  color: #f2f6f5;
+  margin: 0;
+}
+
+.rail-toc {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 0 20px;
+}
+
+.rail-item {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 22px;
+  border: none;
+  background: transparent;
+  color: rgba(207, 224, 221, 0.78);
+  text-align: left;
+  font-family: var(--sans);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  border-left: 2px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.rail-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f2f6f5;
+}
+
+.rail-item.current {
+  background: rgba(23, 162, 162, 0.14);
+  border-left-color: #d98d2b;
+  color: #f2f6f5;
+  font-weight: 600;
+}
+
+.rail-item .idx {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: #17a2a2;
+  flex-shrink: 0;
+  width: 34px;
+}
+
+.rail-item.current .idx { 
+  color: #d98d2b; 
+}
+
+/* --- Floating, Transparent Slide Counter --- */
+.nav {
+  position: fixed;
+  bottom: 12px;
+  right: 16px;
+  background: rgba(255, 255, 255, 0.4); 
+  backdrop-filter: blur(3px); 
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--ink-soft);
+  z-index: 999; 
+  pointer-events: none; 
+  opacity: 0.7; 
+}
+#counter { letter-spacing: 0.02em; }
+
+.progress { position: fixed; top: 0; left: var(--rail-w); width: calc(100% - var(--rail-w)); height: 2px; background: transparent; z-index: 10; transition: left 0.3s ease, width 0.3s ease; }
+.progress-bar { height: 100%; width: 20%; background: var(--sig-green); transition: width 0.4s ease; }
+
+@media (max-width: 860px) {
+  :root { --rail-w: 0px; }
+  .rail { transform: translateX(-100%); }
+  body.rail-toggled .rail { transform: translateX(0); box-shadow: 2px 0 16px rgba(0,0,0,0.1); width: 300px; }
+  .deck { padding-left: 0; }
+  .slide { left: 0; padding: 10vh 7vw; }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .slide, .rail, .deck, .progress { transition: none !important; }
+  .track .runner { animation: none !important; }
+}
+
+
+
+
+
+
+
+/* --- Image Hover Effects --- */
+.switch-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; 
+  border-radius: 4px;
+  cursor: zoom-in; /* Changes mouse to a magnifying glass */
+  transition: transform 0.2s ease;
+}
+.switch-img img:hover {
+  transform: scale(1.06); /* Slight pop effect when hovering */
+}
+
+/* --- Full Screen Lightbox --- */
+.lightbox {
+  display: none; 
+  position: fixed;
+  z-index: 999999; /* Ensures it sits on top of the side rail and header */
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(16, 26, 35, 0.92); /* Dark background */
+  backdrop-filter: blur(6px); /* Blurs the slides behind it */
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.lightbox.active {
+  display: flex;
+  opacity: 1;
+}
+
+.lightbox-content {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  object-fit: contain;
+  cursor: zoom-out;
+  transform: scale(0.95);
+  transition: transform 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  background: #fff; /* White background behind transparent PNGs/JPGs */
+  padding: 10px;
+}
+
+.lightbox.active .lightbox-content {
+  transform: scale(1);
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 35px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 50px;
+  font-weight: 300;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  font-family: var(--sans);
+  line-height: 1;
+}
+
+.lightbox-close:hover {
+  color: #ffffff;
+}
+
+
+
+
+
+
+
+
+
+
+/* --- Startup Lecture Prompt Overlay --- */
+.ngn-prompt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(16, 26, 35, 0.95);
+  backdrop-filter: blur(8px);
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ngn-prompt-card {
+  background: var(--box-bg, #ffffff);
+  color: var(--ink, #1C1C1A);
+  padding: 40px;
+  border-radius: 12px;
+  max-width: 500px;
+  width: 90%;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  font-family: var(--sans);
+  text-align: left;
+  border: 1px solid var(--line);
+}
+
+.ngn-prompt-card h2 {
+  font-family: var(--serif);
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 24px;
+}
+
+.ngn-prompt-card p {
+  color: var(--ink-soft);
+  font-size: 14.5px;
+  line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.ngn-prompt-card input[type="text"] {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 16px;
+  font-family: var(--mono);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--ink);
+  margin-bottom: 24px;
+  box-sizing: border-box;
+}
+
+.ngn-prompt-card input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.ngn-prompt-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.ngn-prompt-actions button {
+  flex: 1;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.2s;
+}
+
+.btn-load {
+  background: var(--accent);
+  color: white;
+}
+
+.btn-all {
+  background: var(--line-soft);
+  color: var(--ink);
+}
+
+.ngn-prompt-actions button:hover {
+  opacity: 0.85;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* --- Landscape Switch / Screen Container --- */
+.switch-img-landscape {
+  width: 480px;
+  height: 341px; /* Matches the 1080x768 (4:3) native ratio of your image */
+  flex-shrink: 0;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.switch-img-landscape img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Keeps the entire screen fully visible without cropping */
+  border-radius: 4px;
+  cursor: zoom-in;
+  transition: transform 0.2s ease;
+}
+.switch-img-landscape img:hover {
+  transform: scale(1.03);
+}
