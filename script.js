@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buildSidebar();
 
     // ==========================================
-    // 2. Interactive Startup Prompt Logic (FIXED)
+    // 2. Interactive Startup Prompt Logic (FIXED & UPDATED)
     // ==========================================
     const overlay = document.getElementById('ngn-prompt-overlay');
     const inputField = document.getElementById('ngn-input-field');
@@ -61,16 +61,20 @@ document.addEventListener('DOMContentLoaded', () => {
             const requestedNgns = filterText.split(',').map(n => n.trim().padStart(2, '0'));
             let currentNgnTag = "";
             
-            // Loop through all slides. If a slide is a cover, update the current tag.
-            // If the tag isn't requested, delete the slide and its children.
             slides.forEach((slide) => {
                 const sidebarTitle = slide.getAttribute('data-sidebar');
-                if (sidebarTitle) {
+                
+                // 1. Identify the Thank You slide based on its attributes
+                const isThankYouSlide = (sidebarTitle === 'End of Slides' || slide.getAttribute('data-title') === 'Thank You');
+
+                // 2. Only look for NGN tags if it is NOT the Thank You slide
+                if (sidebarTitle && !isThankYouSlide) {
                     const match = sidebarTitle.match(/NGN-(\d+)/i);
                     if (match) currentNgnTag = match[1].padStart(2, '0');
                 }
                 
-                if (!requestedNgns.includes(currentNgnTag)) {
+                // 3. Remove the slide ONLY if it's unrequested AND not the Thank You slide
+                if (!requestedNgns.includes(currentNgnTag) && !isThankYouSlide) {
                     slide.remove(); 
                 }
             });
@@ -202,8 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUI();
     }
 
-    slides[currentIdx].classList.add('active');
-    updateUI();
+    if(slides.length > 0) {
+        slides[currentIdx].classList.add('active');
+        updateUI();
+    }
 
     // ==========================================
     // 3. Dynamic Color Theming for NGN Badges
@@ -240,7 +246,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const swipeThreshold = 50; 
     const maxVerticalDeviation = 30; // Prevents triggering when scrolling vertically
 
-    // Touch Swiping (UPDATED FOR STRICT HORIZONTAL)
+    // Touch Swiping (Strict Horizontal)
     deck.addEventListener('touchstart', (e) => {
         touchstartX = e.changedTouches[0].screenX;
         touchstartY = e.changedTouches[0].screenY;
@@ -265,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // 10% Edge Clicking for Navigation (UPDATED COMMENTS & LOGIC)
+    // 10% Edge Clicking for Navigation
     deck.addEventListener('click', (e) => {
         // Prevent slide navigation when clicking on images or buttons
         if (e.target.tagName.toLowerCase() === 'img' || e.target.closest('button') || e.target.closest('.rail-item')) {
@@ -275,11 +281,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickX = e.clientX;
         const screenWidth = window.innerWidth;
 
-        // Triggers only if clicked in the far left 5% or far right 5% of the screen
-        if (clickX < screenWidth * 0.05) {
-            changeSlide(currentIdx - 1); // Clicked in the left 5%
-        } else if (clickX > screenWidth * 0.95) {
-            changeSlide(currentIdx + 1); // Clicked in the right 5%
+        // Triggers only if clicked in the far left 10% or far right 10% of the screen
+        if (clickX < screenWidth * 0.10) {
+            changeSlide(currentIdx - 1); // Clicked in the left 10%
+        } else if (clickX > screenWidth * 0.90) {
+            changeSlide(currentIdx + 1); // Clicked in the right 10%
         }
     });
 
