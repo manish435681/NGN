@@ -275,11 +275,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const clickX = e.clientX;
         const screenWidth = window.innerWidth;
 
-        // Triggers only if clicked in the far left 10% or far right 10% of the screen
-        if (clickX < screenWidth * 0.10) {
-            changeSlide(currentIdx - 1); // Clicked in the left 10%
-        } else if (clickX > screenWidth * 0.90) {
-            changeSlide(currentIdx + 1); // Clicked in the right 10%
+        // Triggers only if clicked in the far left 5% or far right 5% of the screen
+        if (clickX < screenWidth * 0.05) {
+            changeSlide(currentIdx - 1); // Clicked in the left 5%
+        } else if (clickX > screenWidth * 0.95) {
+            changeSlide(currentIdx + 1); // Clicked in the right 5%
         }
     });
 
